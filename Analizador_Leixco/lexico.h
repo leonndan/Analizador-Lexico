@@ -56,6 +56,7 @@ private:
 public:
 	string simbolo;
 	int tipo;
+	string aux;
 
 	lexico(string fuente);
 	lexico();

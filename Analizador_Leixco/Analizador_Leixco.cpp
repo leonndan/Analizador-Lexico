@@ -10,7 +10,7 @@ int main()
     lexico lexico;
 
 
-    lexico.entrada("return *");
+    lexico.entrada("8 3.5 4.8 int while c");
     cout << "Resultado del analisis lexico " << endl << endl;
     cout << "Simbolo\t\tTipo" << endl;
     while (lexico.simbolo.compare("$") != 0)

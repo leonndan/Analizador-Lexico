@@ -28,7 +28,7 @@ string lexico::tipoAcad(int tipo)
 		cad = "Cadena";
 		break;
 	case TipoSimbolo::TIPO:
-		cad = "Palabra Reservada";
+		cad = "Tipo de dato";
 		break;
 	case TipoSimbolo::OPSU:
 		cad = "Operador de Suma/Resta";
@@ -121,18 +121,32 @@ int lexico::sigSimbolo()
 			}
 			if (c == '+' || c == '-') aceptacion(5);
 			if (c == '*' || c == '/')aceptacion(6);
-			if (c == '<' || c == '<=' || c == '>' || c == '>=')aceptacion(7);
-			if (c == '||')aceptacion(8);
-			if (c == '&&')aceptacion(9);
-			if (c == '!')aceptacion(10);
-			if (c == '==' || c == '!=')aceptacion(11);
+			if (c == '<' || c == '>') {
+				estado = 4;
+				simbolo += c;
+			}
+			if (c == '|') {
+				estado = 5;
+				simbolo += c;
+			}
+			if (c == '&') {
+				estado = 6;
+				simbolo += c;
+			}
+			if (c == '!') {
+				estado = 7;
+				simbolo += c;
+			}
 			if (c == ';')aceptacion(12);
 			if (c == ',')aceptacion(13);
 			if (c == '(')aceptacion(14);
 			if (c == ')') aceptacion(15);
 			if (c == '{') aceptacion(16);
 			if (c == '}') aceptacion(17);
-			if (c == '=')aceptacion(18);
+			if (c == '=') {
+				estado = 8;
+				simbolo += c;
+			}
 			else {
 				
 				if (c == '$') {
@@ -148,31 +162,31 @@ int lexico::sigSimbolo()
 				continua = true;
 			}
 			else {
-				if (simbolo == "int" || simbolo == "float" || simbolo == "void") {
+				aux = simbolo;
+				if (aux == "int"|| aux=="float"|| aux=="void") {
 					aceptacion(4);
 				}
-				else if(simbolo=="if") {
+				else {
+					aceptacion(0);
+				}
+				if (aux == "if") {
 					aceptacion(19);
 				}
-				else if (simbolo == "while") {
+				if (aux == "while") {
 					aceptacion(20);
 				}
-				else if (simbolo == "return ") {
+				if (aux == "return") {
 					aceptacion(21);
 				}
-				else if (simbolo == "else") {
+				if (aux == "else") {
 					aceptacion(22);
 				}
-				aceptacion(0);
-				estado = 0;
-				continua =false;
+				
 			}
 			break;
 		case 2:
-			if (((c == '.') && (cont == 0) || esLetra(c))) {
-				estado = 0;
-				continua=false;
-				aceptacion(-1);
+			if (c!= '.') {
+				aceptacion(1);
 			}
 			else if (c == '.') {
 				estado=3;
@@ -184,6 +198,46 @@ int lexico::sigSimbolo()
 				estado = 0;
 				aceptacion(2);
 
+			}
+			break;
+		case 4:
+			if (c != '=') {
+				aceptacion(7);
+			}
+			else if(c== '=') {
+				aceptacion(7);
+			}
+			break;
+		case 5:
+			if (c != '|') {
+				aceptacion(23);
+			}
+			else if (c == '|') {
+				aceptacion(8);
+			}
+			break;
+		case 6:
+			if (c != '&') {
+				aceptacion(23);
+			}
+			else if (c == '&') {
+				aceptacion(9);
+			}
+			break;
+		case 7:
+			if (c != '=') {
+				aceptacion(10);
+			}
+			else if (c == '=') {
+				aceptacion(11);
+			}
+			break;
+		case 8:
+			if (c != '=') {
+				aceptacion(18);
+			}
+			else if (c == '=') {
+				aceptacion(11);
 			}
 			break;
 		}	
