@@ -117,24 +117,25 @@ int lexico::sigSimbolo()
 			if (esDigito(c)) {
 				estado = 2;
 				simbolo += c;
-				cont++;
+			 }
+			if (c == '+' || c == '-') {
+				aceptacion(5);
 			}
-			if (c == '+' || c == '-') aceptacion(5);
 			if (c == '*' || c == '/')aceptacion(6);
 			if (c == '<' || c == '>') {
-				estado = 4;
-				simbolo += c;
-			}
-			if (c == '|') {
 				estado = 5;
 				simbolo += c;
 			}
-			if (c == '&') {
+			if (c == '|') {
 				estado = 6;
 				simbolo += c;
 			}
-			if (c == '!') {
+			if (c == '&') {
 				estado = 7;
+				simbolo += c;
+			}
+			if (c == '!') {
+				estado = 8;
 				simbolo += c;
 			}
 			if (c == ';')aceptacion(12);
@@ -144,26 +145,22 @@ int lexico::sigSimbolo()
 			if (c == '{') aceptacion(16);
 			if (c == '}') aceptacion(17);
 			if (c == '=') {
-				estado = 8;
+				estado = 9;
 				simbolo += c;
 			}
 			else {
-				
-				if (c == '$') {
-					aceptacion(23);
-				}
+				if (c == '$')aceptacion(23);
 			}
-			
-			
 			break;
 		case 1:
 			if (esLetra(c) || esDigito(c)) {
+				estado = 1;
 				simbolo += c;
-				continua = true;
+				
 			}
-			else {
+			else if(!esLetra(c)|| !esDigito(c)) {
 				aux = simbolo;
-				if (aux == "int"|| aux=="float"|| aux=="void") {
+				if (aux == "int" || aux == "float" || aux == "void") {
 					aceptacion(4);
 				}
 				else {
@@ -182,25 +179,38 @@ int lexico::sigSimbolo()
 					aceptacion(22);
 				}
 				
+				
 			}
 			break;
 		case 2:
-			if (c!= '.') {
-				aceptacion(1);
+			if (esDigito(c)) {
+				estado = 2;
+				simbolo += c;
 			}
 			else if (c == '.') {
-				estado=3;
-				simbolo+=c;
-				}
+				estado = 3;
+				simbolo += c;
+			}
+			else if (c!= '.' || !esDigito(c)) {
+				aceptacion(1);
+			}
 			break;
 		case 3:
 			if (esDigito(c)) {
-				estado = 0;
-				aceptacion(2);
-
+				estado = 4;
+				simbolo += c;
 			}
 			break;
 		case 4:
+			if (esDigito(c)) {
+				estado = 4;
+				simbolo += c;
+			}
+			else {
+				aceptacion(2);
+			}
+			break;
+		case 5:
 			if (c != '=') {
 				aceptacion(7);
 			}
@@ -208,7 +218,7 @@ int lexico::sigSimbolo()
 				aceptacion(7);
 			}
 			break;
-		case 5:
+		case 6:
 			if (c != '|') {
 				aceptacion(23);
 			}
@@ -216,7 +226,7 @@ int lexico::sigSimbolo()
 				aceptacion(8);
 			}
 			break;
-		case 6:
+		case 7:
 			if (c != '&') {
 				aceptacion(23);
 			}
@@ -224,7 +234,7 @@ int lexico::sigSimbolo()
 				aceptacion(9);
 			}
 			break;
-		case 7:
+		case 8:
 			if (c != '=') {
 				aceptacion(10);
 			}
@@ -232,7 +242,7 @@ int lexico::sigSimbolo()
 				aceptacion(11);
 			}
 			break;
-		case 8:
+		case 9:
 			if (c != '=') {
 				aceptacion(18);
 			}
@@ -334,8 +344,9 @@ char lexico::sigCaracter()
 void lexico::sigEstado(int estado)
 {
 	this->estado = estado;
-	simbolo += c;
-
+	if (estado != 0) {
+		simbolo += c;
+	}
 }
 void lexico::aceptacion(int estado)
 {
@@ -349,7 +360,7 @@ bool lexico::terminado()
 }
 bool lexico::esLetra(char c)
 {
-	return isalpha(c) || c == '_';
+	return c>= 'a' && c<= 'z' || c == '_' || c >= 'A' && c <= 'Z';
 }
 bool lexico::esDigito(char c)
 {
